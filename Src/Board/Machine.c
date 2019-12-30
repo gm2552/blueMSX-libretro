@@ -455,114 +455,11 @@ static int readMachine(Machine* machine, const char* machineName, const char* fi
 
 void machineSave(Machine* machine)
 {
-    char dir[512];
-    char file[512];
-    char buffer[10000];
-    int size = 0;
-    int i;
-    IniFile *configIni;
-
-    sprintf(dir, "%s/%s", machinesDir, machine->name);
-    archCreateDirectory(dir);
-
-    sprintf(file, "%s/%s/config.ini", machinesDir, machine->name);
-
-    configIni = iniFileOpen(file);
-    if (configIni == NULL)
-        return;
-
-    // Write CMOS info
-    iniFileWriteString(configIni, "CMOS", "Enable CMOS", machine->cmos.enable ? "1" : "0");
-    iniFileWriteString(configIni, "CMOS", "Battery Backed", machine->cmos.batteryBacked ? "1" : "0");
-
-    // Write Audio info
-    iniFileWriteString(configIni, "AUDIO", "PSG Stereo", machine->audio.psgstereo ? "1" : "0");
-    
-    if (machine->audio.psgstereo) {
-        for (i = 0; i < sizeof(machine->audio.psgpan) / sizeof(machine->audio.psgpan[0]); i++) {
-            char s[32];
-            int pan = machine->audio.psgpan[i];
-            sprintf(s, "PSG Pan channel %d", i);
-            iniFileWriteString(configIni, "AUDIO", s,  pan < 0 ? "left" : pan > 0 ? "right" : "center");
-        }
-    }
-
-    // Write FDC info
-    sprintf(buffer, "%d", machine->fdc.count);
-    iniFileWriteString(configIni, "FDC", "Count", buffer);
-
-    // Write CPU info
-    sprintf(buffer, "%dHz", machine->cpu.freqZ80);
-    iniFileWriteString(configIni, "CPU", "Z80 Frequency", buffer);
-    if (machine->cpu.hasR800) {
-        sprintf(buffer, "%dHz", machine->cpu.freqR800);
-        iniFileWriteString(configIni, "CPU", "R800 Frequency", buffer);
-    }
-
-    // Write Board info
-    switch (machine->board.type) {
-    case BOARD_MSX:          iniFileWriteString(configIni, "Board", "type", "MSX"); break;
-    case BOARD_MSX_S3527:    iniFileWriteString(configIni, "Board", "type", "MSX-S3527"); break;
-    case BOARD_MSX_S1985:    iniFileWriteString(configIni, "Board", "type", "MSX-S1985"); break;
-    case BOARD_MSX_T9769B:   iniFileWriteString(configIni, "Board", "type", "MSX-T9769B"); break;
-    case BOARD_MSX_T9769C:   iniFileWriteString(configIni, "Board", "type", "MSX-T9769C"); break;
-    case BOARD_MSX_FORTE_II: iniFileWriteString(configIni, "Board", "type", "MSX-ForteII"); break;
-    case BOARD_SVI:          iniFileWriteString(configIni, "Board", "type", "SVI"); break;
-    case BOARD_COLECO:       iniFileWriteString(configIni, "Board", "type", "ColecoVision"); break;
-    case BOARD_COLECOADAM:   iniFileWriteString(configIni, "Board", "type", "ColecoAdam"); break;
-    case BOARD_SG1000:       iniFileWriteString(configIni, "Board", "type", "SG-1000"); break;
-    case BOARD_SF7000:       iniFileWriteString(configIni, "Board", "type", "SF-7000"); break;
-    case BOARD_SC3000:       iniFileWriteString(configIni, "Board", "type", "SC-3000"); break;
-    }
-
-    // Write video info
-    switch (machine->video.vdpVersion) {
-    case VDP_V9958:     iniFileWriteString(configIni, "Video", "version", "V9958"); break;
-    case VDP_V9938:     iniFileWriteString(configIni, "Video", "version", "V9938"); break;
-    case VDP_TMS9929A:  iniFileWriteString(configIni, "Video", "version", "TMS9929A"); break;
-    case VDP_TMS99x8A:  iniFileWriteString(configIni, "Video", "version", "TMS99x8A"); break;
-    }
-
-    sprintf(buffer, "%dkB", machine->video.vramSize / 0x400);
-    iniFileWriteString(configIni, "Video", "vram size", buffer);
-
-    // Write subslot info
-    iniFileWriteString(configIni, "Subslotted Slots", "slot 0", machine->slot[0].subslotted ? "1" : "0");
-    iniFileWriteString(configIni, "Subslotted Slots", "slot 1", machine->slot[1].subslotted ? "1" : "0");
-    iniFileWriteString(configIni, "Subslotted Slots", "slot 2", machine->slot[2].subslotted ? "1" : "0");
-    iniFileWriteString(configIni, "Subslotted Slots", "slot 3", machine->slot[3].subslotted ? "1" : "0");
-
-    // Write external slot info
-    sprintf(buffer, "%d %d", machine->cart[0].slot, machine->cart[0].subslot);
-    iniFileWriteString(configIni, "External Slots", "slot A", buffer);
-    sprintf(buffer, "%d %d", machine->cart[1].slot, machine->cart[1].subslot);
-    iniFileWriteString(configIni, "External Slots", "slot B", buffer);
-
-    // Write slots
-    for (i = 0; i < machine->slotInfoCount; i++) {
-        size += sprintf(buffer + size, "%d %d %d %d %d \"%s\" \"%s\"",
-                        machine->slotInfo[i].slot,
-                        machine->slotInfo[i].subslot,
-                        machine->slotInfo[i].startPage,
-                        machine->slotInfo[i].pageCount,
-                        machine->slotInfo[i].romType,
-                        machine->slotInfo[i].name,
-                        machine->slotInfo[i].inZipName);
-        buffer[size++] = 0;
-    }
-
-    buffer[size++] = 0;
-    buffer[size++] = 0;
-
-//    iniFileWriteString("Slots", NULL, NULL);
-    iniFileWriteSection(configIni, "Slots", buffer);
-
-    iniFileClose(configIni);
 }
 
 Machine* machineCreate(const char* machineName)
 {
-    char configIni[512];
+    char configIni[512] = "<mem>";
     Machine* machine;
     int success;
     FILE *file;
@@ -574,6 +471,7 @@ Machine* machineCreate(const char* machineName)
     machine->zipFile = NULL;
     machine->isZipped = 0;
     
+    /*
     sprintf(configIni, "%s/%s/config.ini", machinesDir, machineName);
     file = fopen(configIni, "rb");
     
@@ -592,7 +490,7 @@ Machine* machineCreate(const char* machineName)
         if (file == NULL)
         {
 		    machineDestroy(machine);
-            return NULL; // Not compressed and no config.ini
+            return NULL; 
         }
         
         fclose(file);
@@ -602,7 +500,7 @@ Machine* machineCreate(const char* machineName)
         
         machine->isZipped = 1;
     }
-    
+    */
     success = readMachine(machine, machineName, configIni);
     if (!success)
     {
@@ -1845,3 +1743,4 @@ void machineSetDirectory(const char* dir)
 {
     strcpy(machinesDir, dir);
 }
+

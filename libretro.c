@@ -143,7 +143,7 @@ int get_media_type(const char* filename)
    }
    else if(strcmp(extension, ".rom") == 0){
       if (is_auto){
-         strcpy(msx_type, "MSX2+");
+         strcpy(msx_type, "COL - ColecoVision");
       }
       return MEDIA_TYPE_CART;
    }
