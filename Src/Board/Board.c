@@ -584,6 +584,7 @@ int boardInsertExternalDevices()
     int i;
     for (i = 0; i < 2; i++) {
         if (boardDeviceInfo->carts[i].inserted) {
+            fprintf(stdout, "[Board.c] Inserted external device into cart slot %d.  Board cart change\n", i);
             boardChangeCartridge(i, boardDeviceInfo->carts[i].type, 
                                  boardDeviceInfo->carts[i].name,
                                  boardDeviceInfo->carts[i].inZipName);
@@ -1151,6 +1152,8 @@ HdType boardGetHdType(int hdIndex)
 
 void boardChangeCartridge(int cartNo, RomType romType, char* cart, char* cartZip)
 {
+    fprintf(stdout, "[Board.c] Changing board cartridge in cartNo %d\n", cartNo);
+
     if (cart && strlen(cart) == 0) {
         cart = NULL;
     }
@@ -1161,6 +1164,7 @@ void boardChangeCartridge(int cartNo, RomType romType, char* cart, char* cartZip
     
     if (romType == ROM_UNKNOWN) {
         int size;
+        fprintf(stdout, "[Board.c] Attempting to load cartridge ROM: %s\n", cart);  
         UInt8* buf = romLoad(cart, cartZip, &size);
         if (buf != NULL) {
             MediaType* mediaType = mediaDbGuessRom(buf, size);
