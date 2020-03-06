@@ -1218,6 +1218,7 @@ void boardChangeCartridge(int cartNo, RomType romType, char* cart, char* cartZip
 
     if (boardRunning && cartNo < boardInfo.cartridgeCount) {
         int inserted = cartridgeInsert(cartNo, romType, cart, cartZip);
+        fprintf(stdout, "[Board.c] Cartridge insert completed with result %d\n", inserted);
         if (boardInfo.changeCartridge != NULL) {
             boardInfo.changeCartridge(boardInfo.cpuRef, cartNo, inserted);
         }

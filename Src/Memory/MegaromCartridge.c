@@ -338,6 +338,7 @@ int cartridgeInsert(int cartNo, RomType romType, const char* cart, const char* c
             buf = romLoad("Machines/Shared Roms/nowindDos2.rom", cartZip, &size);
         }
         else {
+            fprintf(stdout, "[MegaromCartriged.c] Attempting to load ROM: %s\n", cart); 
             buf = romLoad(cart, cartZip, &size);
         }
         if (buf == NULL) {
@@ -482,6 +483,7 @@ int cartridgeInsert(int cartNo, RomType romType, const char* cart, const char* c
                 eepromName[i] = 0;
                 strcat(eepromName, "_eeprom.rom");
                     
+                fprintf(stdout, "[MegaromCartriged.c] Attempting to eeProm ROM: %s\n", romName);     
                 eepromData = romLoad(eepromName, NULL, &eepromSize);
                 success &= romMapperDumasCreate(romName, buf, size, slot, sslot, 2, eepromData, eepromSize);
                 if (eepromData != NULL) {
@@ -685,6 +687,7 @@ int cartridgeInsert(int cartNo, RomType romType, const char* cart, const char* c
             break;
 
         case ROM_COLECO:
+            fprintf(stdout, "[MegaromCartridge.c] Need to map rom normally\n");
             success &= romMapperNormalCreate(romName, buf, size, 0, 0, 4);
             break;
 

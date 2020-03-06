@@ -412,7 +412,9 @@ int colecoCreate(Machine* machine,
         slotMapRamPage(0, 0, i);
     }
 
-    if (success) {
+    if (success) 
+    {
+        fprintf(stdout, "[Coleco.c] Machine initialized successfully.  Inserting external device\n");
         success = boardInsertExternalDevices();
     }
 

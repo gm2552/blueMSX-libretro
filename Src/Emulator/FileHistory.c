@@ -287,6 +287,7 @@ char* fileGetNext(char* filename, char* zipFile) {
 
 void updateExtendedRomName(int drive, char* filename, char* zipFile) {
     int size;
+    fprintf(stdout, "[FileHistory.c] Attempting to load ROM: %s\n", filename); 
     char* buf = romLoad(filename, zipFile[0] ? zipFile : NULL, &size);
 
     if (buf != NULL) {
@@ -307,6 +308,7 @@ void updateExtendedDiskName(int drive, char* filename, char* zipFile) {
 
 #ifndef WII
     if (drive < MAX_FDC_COUNT) {
+        fprintf(stdout, "[FileHistory.c] Attempting to load extended disk name ROM: %s\n", filename); 
         buf = romLoad(filename, zipFile[0] ? zipFile : NULL, &size);
         if (buf != NULL) {
             strcpy(extendedDiskName[drive], mediaDbGetPrettyString(mediaDbLookupDisk(buf, size)));
@@ -342,6 +344,7 @@ void updateExtendedDiskName(int drive, char* filename, char* zipFile) {
 
 void updateExtendedCasName(int drive, char* filename, char* zipFile) {
     int size;
+    fprintf(stdout, "[FileHistory.c] Attempting to load extended cassette name ROM: %s\n", filename); 
     char* buf = romLoad(filename, zipFile[0] ? zipFile : NULL, &size);
 
     extendedCasName[drive][0] = 0;

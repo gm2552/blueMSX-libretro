@@ -219,6 +219,7 @@ static int sviLoad80Col(Machine* machine, VdpSyncMode vdpSyncMode)
     for (i = 0; i < machine->slotInfoCount; i++) {
         if (!machine->slotInfo[i].error) {
             int size;
+            fprintf(stdout, "[SVI.c] Attempting to load ROM: %s\n", machine->slotInfo[i].name); 
             UInt8* buf = romLoad(machine->slotInfo[i].name, machine->slotInfo[i].inZipName, &size);
 
             if (buf != NULL) {

@@ -795,7 +795,8 @@ static void check_variables(void)
 
 bool retro_load_game(const struct retro_game_info *info)
 {
-   const char *save_dir = NULL;
+   const char *save_dir = "/userdata";
+   
    int i, media_type;
    char properties_dir[256], machines_dir[256], mediadb_dir[256];
    const char *dir = NULL;
@@ -827,10 +828,11 @@ bool retro_load_game(const struct retro_game_info *info)
    
    check_variables();
 
-   if (environ_cb(RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY, &dir) && dir)
-      strcpy(properties_dir, dir);
-   else /* Fallback */
-      extract_directory(properties_dir, info->path, sizeof(properties_dir));
+   snprintf(properties_dir, sizeof(properties_dir), "%s", "/tmp");
+   //if (environ_cb(RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY, &dir) && dir)
+   //   strcpy(properties_dir, dir);
+   //else /* Fallback */
+   //   extract_directory(properties_dir, info->path, sizeof(properties_dir));
 
    snprintf(machines_dir, sizeof(machines_dir), "%s%c%s", properties_dir, SLASH, "Machines");
    snprintf(mediadb_dir, sizeof(mediadb_dir), "%s%c%s", properties_dir, SLASH, "Databases");
@@ -838,8 +840,9 @@ bool retro_load_game(const struct retro_game_info *info)
    propertiesSetDirectory(properties_dir, properties_dir);
    machineSetDirectory(machines_dir);
    
-   if(environ_cb(RETRO_ENVIRONMENT_GET_SAVE_DIRECTORY, &save_dir) && save_dir)
-      boardSetDirectory(save_dir);
+   boardSetDirectory(save_dir);
+   //if(environ_cb(RETRO_ENVIRONMENT_GET_SAVE_DIRECTORY, &save_dir) && save_dir)
+   //   boardSetDirectory(save_dir);
    
 #if 0
    boardSetDirectory(buffer);
@@ -950,6 +953,8 @@ bool retro_load_game(const struct retro_game_info *info)
       case MEDIA_TYPE_CART:
       case MEDIA_TYPE_OTHER:
       default:
+         if (log_cb)
+             log_cb(RETRO_LOG_INFO, "[libretro]: Setting properties->media.carts[0].fileName to %s\n", info->path);
          strcpy(properties->media.carts[0].fileName , info->path);
          break;
    }

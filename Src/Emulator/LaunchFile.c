@@ -161,6 +161,7 @@ int insertCartridge(Properties* properties, int drive, const char* fname, const 
     }
     {
         int size;
+        fprintf(stdout, "[LuanchFile.c] Attempting to load ROM: %s\n", filename); 
         char* buf = romLoad(filename, isZip ? romName : NULL, &size);
         char prettyRomName[256];
 
@@ -264,10 +265,12 @@ int insertCartridge(Properties* properties, int drive, const char* fname, const 
     }
     else if (emulatorGetState() != EMU_STOPPED) {
         emulatorSuspend();
+        fprintf(stdout, "[LaunchFile.c] Changing board cartridge in drive without stopping emu %d\n", drive);
         boardChangeCartridge(drive, romType, filename, isZip ? romName : NULL);
         emulatorResume();
     }
     else {
+        fprintf(stdout, "[LaunchFile.c] Changing board cartridge in drive %d with stopped emu\n", drive);
         boardChangeCartridge(drive, romType, filename, isZip ? romName : NULL);
     }
 

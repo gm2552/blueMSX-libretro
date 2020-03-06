@@ -450,7 +450,7 @@ const UInt8 colecovision_bios[8192] =
 
 UInt8* romLoad(const char *fileName, const char *fileInZipFile, int* size)
 {
-    fprintf(stdout, "Loading ROM: %s\n", fileName);
+    //fprintf(stdout, "Loading ROM: %s\n", fileName);
 
 
     UInt8* buf = NULL;

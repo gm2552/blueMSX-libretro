@@ -936,6 +936,8 @@ void machineSaveState(Machine* machine)
 
 int machineInitialize(Machine* machine, UInt8** mainRam, UInt32* mainRamSize, UInt32* mainRamStart)
 {
+    fprintf(stdout, "[Machine.c] Initializing machine with slot count %d\n", machine->slotInfoCount);
+
     UInt8* ram       = NULL;
     UInt32 ramSize   = 0;
     UInt32 ramStart  = 0;
@@ -1024,6 +1026,7 @@ int machineInitialize(Machine* machine, UInt8** mainRam, UInt32* mainRamSize, UI
 
         if (machine->slotInfo[i].romType == ROM_JISYO) {
             if (jisyoRom == NULL) {
+                fprintf(stdout, "[Machine.c] Attempting to load jisyoRom ROM: %s\n", machine->slotInfo[i].name);
                 jisyoRom = romLoad(machine->slotInfo[i].name, machine->slotInfo[i].inZipName, &jisyoRomSize);
 
                 if (jisyoRom == NULL) {
@@ -1254,6 +1257,7 @@ int machineInitialize(Machine* machine, UInt8** mainRam, UInt32* mainRamSize, UI
         case SRAM_ESESCC:
             buf = NULL;
             if (strlen(romName)) {
+                fprintf(stdout, "[Machine.c] Attempting to load MEGA-SCSI etc ROM: %s\n", machine->slotInfo[i].name);
                 buf = romLoad(machine->slotInfo[i].name, machine->slotInfo[i].inZipName, &size);
                 if (buf == NULL) {
                     success = 0;
@@ -1282,6 +1286,7 @@ int machineInitialize(Machine* machine, UInt8** mainRam, UInt32* mainRamSize, UI
         }
         // -------------------------------
 
+        fprintf(stdout, "[Machine.c] Attempting to load ROM: %s\n", machine->slotInfo[i].name);
         buf = romLoad(machine->slotInfo[i].name, machine->slotInfo[i].inZipName, &size);
 
         if (buf == NULL) {
@@ -1387,6 +1392,7 @@ int machineInitialize(Machine* machine, UInt8** mainRam, UInt32* mainRamSize, UI
                 eepromName[j] = 0;
                 strcat(eepromName, "_eeprom.rom");
                     
+                fprintf(stdout, "[Machine.c] Attempting to load eeprom ROM: %s\n", eepromName);
                 eepromData = romLoad(eepromName, NULL, &eepromSize);
                 success &= romMapperDumasCreate(romName, buf, size, slot, subslot, startPage,
                                                 eepromData, eepromSize);
@@ -1447,6 +1453,7 @@ int machineInitialize(Machine* machine, UInt8** mainRam, UInt32* mainRamSize, UI
                 voiceName[j] = 0;
                 strcat(voiceName, "_voice.rom");
                     
+                fprintf(stdout, "[Machine.c] Attempting to load voiceName ROM: %s\n", voiceName);    
                 voiceData = romLoad(voiceName, NULL, &voiceSize);
                 success &= romMapperKonamiKeyboardMasterCreate(romName, buf, size, 
                                                                slot, subslot, startPage,
@@ -1695,7 +1702,8 @@ int machineInitialize(Machine* machine, UInt8** mainRam, UInt32* mainRamSize, UI
                 for (j = strlen(charName); j > 0 && charName[j] != '.'; j--);
                 charName[j] = 0;
                 strcat(charName, "_char.rom");
-                    
+                
+                fprintf(stdout, "[Machine.c] Attempting to load ROM_MICROSOL80 ROM: %s\n", charName);       
                 charData = romLoad(charName, NULL, &charSize);
                 success &= romMapperMicrosolVmx80Create(romName, buf, size, 
                                                         slot, subslot, startPage,

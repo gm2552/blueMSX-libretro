@@ -788,11 +788,13 @@ void actionCartRemove(int i) {
         }
         else {
             emulatorSuspend();
+            fprintf(stdout, "[Actions.c] Changing board cartridge in drive without stopping emu %d\n", i);
             boardChangeCartridge(i, ROM_UNKNOWN, NULL, NULL);
             emulatorResume();
         }
     }
     else {
+        fprintf(stdout, "[Actions.c] Changing board cartridge in drive with stopped emu %d\n", i);
         boardChangeCartridge(i, ROM_UNKNOWN, NULL, NULL);
     }
     archUpdateMenu(0);
