@@ -828,7 +828,9 @@ bool retro_load_game(const struct retro_game_info *info)
    
    check_variables();
 
+   fprintf(stdout, "[Libretro.c] Game path: %s\n", info->path);
    snprintf(properties_dir, sizeof(properties_dir), "%s", "/tmp");
+   fprintf(stdout, "[Libretro.c] Set properties directory to %s\n", properties_dir);
    //if (environ_cb(RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY, &dir) && dir)
    //   strcpy(properties_dir, dir);
    //else /* Fallback */
